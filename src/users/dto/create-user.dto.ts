@@ -1,5 +1,11 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { Role } from '../../auth/models/roles.model';
 
 export class CreateUserDto {
@@ -22,6 +28,11 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   readonly lastName: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  readonly balance: number;
 }
 
 export class CreateAdminDto extends CreateUserDto {
