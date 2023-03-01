@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: 'templateUserPass'
       ALLOW_IP_RANGE: '0.0.0.0/0'
     ports:
-      - '5678:5678'
+      - '5436:5432'
   postgresTest:
     image: 'postgres'
     container_name: 'nestjs_demo_test'
@@ -19,4 +19,4 @@ services:
       POSTGRES_PASSWORD: 'templateTestPass'
       ALLOW_IP_RANGE: '0.0.0.0/0'
     ports:
-      - '5679:5678'
+      - '5437:5432'
