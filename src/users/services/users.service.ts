@@ -13,6 +13,7 @@ import {
   UpdateUserDto,
 } from '../dto/create-user.dto';
 import { User } from '../entities/user.entity';
+import { Role } from '../../auth/models/roles.model';
 
 @Injectable()
 export class UsersService {
@@ -41,6 +42,14 @@ export class UsersService {
     return this.userRepository.find();
   }
 
+  async findAllUsers() {
+    return this.userRepository.find({
+      where: {
+        role: Role.CUSTOMER,
+      },
+    });
+  }
+
   async findByEmailAndGetPassword(email: string) {
     return await this.userRepository.findOne({
       select: ['id', 'password', 'role'],
@@ -60,6 +69,23 @@ export class UsersService {
     return await this.userRepository.findOneOrFail({
       where: { email },
     });
+  }
+
+  async findAllDetails(email?: string, firstName?: string, lastName?: string) {
+    let query = this.userRepository.createQueryBuilder('users');
+    if (email)
+      query = query.andWhere('users.email ILIKE :email', {
+        email,
+      });
+    if (firstName)
+      query = query.andWhere('users.first_name ILIKE :firstName', {
+        firstName,
+      });
+    if (lastName)
+      query = query.andWhere('users.last_name ILIKE :lastName', {
+        lastName,
+      });
+    return query.getMany();
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

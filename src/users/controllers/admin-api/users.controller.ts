@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -14,23 +15,23 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Public } from '../../auth/decorators/public.decorator';
-import { Roles } from '../../auth/decorators/roles.decorator';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../auth/guards/roles.guard';
-import { Role } from '../../auth/models/roles.model';
+import { Roles } from '../../../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../auth/guards/roles.guard';
+import { Role } from '../../../auth/models/roles.model';
 import {
   CreateAdminDto,
   CreateUserDto,
   DefaultColumnsResponse,
   UpdateUserDto,
-} from '../dto/create-user.dto';
-import { UsersService } from '../services/users.service';
+} from '../../dto/create-user.dto';
+import { UsersService } from '../../services/users.service';
+import { UsersSearchDto } from '../../dto/users-search.dto';
 
-@ApiTags('users') // put the name of the controller in swagger
-@Controller('users')
+@ApiTags('admins') // put the name of the controller in swagger
+@Controller('admins')
 @UseGuards(JwtAuthGuard, RolesGuard) //  makes the all routs as private by default
-export class UsersController {
+export class UsersAdminController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: 'create a user with customer role' })
@@ -38,7 +39,7 @@ export class UsersController {
     status: 201,
     type: DefaultColumnsResponse,
   })
-  @Public() // makes the endpoint accessible to all
+  @Roles(Role.ADMIN) // makes the endpoint accessible only by the admin
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
@@ -63,9 +64,37 @@ export class UsersController {
   })
   @ApiBearerAuth('access-token')
   @Roles(Role.ADMIN)
+  @Get('users')
+  findAllUsers() {
+    return this.usersService.findAllUsers();
+  }
+
+  @ApiResponse({
+    status: 200,
+    isArray: true,
+    type: DefaultColumnsResponse,
+  })
+  @ApiBearerAuth('access-token')
+  @Roles(Role.ADMIN)
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @ApiResponse({
+    status: 200,
+    isArray: true,
+    type: DefaultColumnsResponse,
+  })
+  @ApiBearerAuth('access-token')
+  @Roles(Role.ADMIN)
+  @Post('filter')
+  findByFilter(@Query() usersSearchDto: UsersSearchDto) {
+    return this.usersService.findAllDetails(
+      usersSearchDto.email,
+      usersSearchDto.firstName,
+      usersSearchDto.lastName,
+    );
   }
 
   @ApiBearerAuth('access-token')
