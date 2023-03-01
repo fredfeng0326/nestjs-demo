@@ -2,21 +2,21 @@ version: '3'
 services:
   postgres:
     image: 'postgres'
-    container_name: 'template_postgres'
+    container_name: 'nestjs_demo'
     environment:
       POSTGRES_DB: 'template'
       POSTGRES_USER: 'templateUser'
       POSTGRES_PASSWORD: 'templateUserPass'
       ALLOW_IP_RANGE: '0.0.0.0/0'
     ports:
-      - '5432:5432'
+      - '5678:5678'
   postgresTest:
     image: 'postgres'
-    container_name: 'template_test_postgres'
+    container_name: 'nestjs_demo_test'
     environment:
       POSTGRES_DB: 'templateTest'
       POSTGRES_USER: 'templateTestUser'
       POSTGRES_PASSWORD: 'templateTestPass'
       ALLOW_IP_RANGE: '0.0.0.0/0'
     ports:
-      - '5433:5432'
+      - '5679:5678'

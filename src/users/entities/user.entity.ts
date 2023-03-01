@@ -31,6 +31,14 @@ export class User extends DefaultEntity {
   })
   role: Role;
 
+  @Column({
+    type: 'decimal',
+    precision: 15,
+    scale: 6,
+    default: 0,
+  })
+  balance: number;
+
   @BeforeInsert()
   async hashPassword() {
     if (this.password) {
