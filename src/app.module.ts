@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import config from './config';
 import { enviroments } from './environments';
 import { UsersModule } from './users/users.module';
+import { AdminjsModule } from './adminjs/adminjs.module';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -35,11 +37,13 @@ import { UsersModule } from './users/users.module';
           password: configService.postgres.password,
           autoLoadEntities: true,
           keepConnectionAlive: true,
+          entities: [User],
         };
       },
     }),
     UsersModule,
     AuthModule,
+    AdminjsModule,
   ],
   controllers: [],
   providers: [],
