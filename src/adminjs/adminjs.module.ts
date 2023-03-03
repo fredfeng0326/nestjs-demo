@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common';
 import AdminJS, { ResourceOptions } from 'adminjs';
 import * as AdminJSTypeorm from '@adminjs/typeorm';
 import { UsersResource } from './resources/users.resource';
+import { AdminsModule } from '../admins/admins.module';
+import { componentLoader } from './components';
 
 AdminJS.registerAdapter({
   Resource: AdminJSTypeorm.Resource,
@@ -54,10 +56,12 @@ const authenticate = async (email: string, password: string) => {
 @Module({
   imports: [
     AdminModule.createAdminAsync({
+      imports: [AdminsModule],
       useFactory: () => ({
         adminJsOptions: {
           rootPath: '/admin',
           resources: [UsersResource()],
+          componentLoader,
         },
         auth: {
           authenticate,

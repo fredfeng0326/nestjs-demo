@@ -4,7 +4,7 @@
   "compilerOptions": {
     "plugins": ["@nestjs/swagger/plugin"],
     "assets": [
-      { "include": "dminjs/component/**/*", "watchAssets": true, "outDir": "dist/src" }
+      { "include": "adminjs/component/**/*", "watchAssets": true, "outDir": "dist/src" }
     ]
   }
 }

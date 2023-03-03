@@ -8,6 +8,7 @@ import { enviroments } from './environments';
 import { UsersModule } from './users/users.module';
 import { AdminjsModule } from './adminjs/adminjs.module';
 import { User } from './users/entities/user.entity';
+import { AdminsModule } from './admins/admins.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { User } from './users/entities/user.entity';
     UsersModule,
     AuthModule,
     AdminjsModule,
+    AdminsModule,
   ],
   controllers: [],
   providers: [],

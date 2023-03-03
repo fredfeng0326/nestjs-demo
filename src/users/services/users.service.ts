@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import Big from 'big.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { createHash } from 'crypto';
@@ -24,7 +25,9 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto | CreateAdminDto) {
     const user = await this.userRepository.findOne({
-      email: createUserDto.email,
+      where: {
+        email: createUserDto.email,
+      },
     });
 
     if (user) {
@@ -57,12 +60,18 @@ export class UsersService {
     });
   }
 
-  async findOne(id: number) {
-    return await this.userRepository.findOne(id);
+  async addBalance(userId: string, amount: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    user.balance = Big(user.balance).plus(amount).toNumber();
+    return this.userRepository.save(user);
   }
 
-  async findById(userId: number) {
-    return await this.userRepository.findOneOrFail(userId);
+  async findOne(id: string) {
+    return await this.userRepository.findOne({ where: { id: id } });
+  }
+
+  async findById(userId: string) {
+    return await this.userRepository.findOneOrFail({ where: { id: userId } });
   }
 
   async findByEmail(email: string) {
@@ -88,7 +97,7 @@ export class UsersService {
     return query.getMany();
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.preload({
       id,
       ...updateUserDto,
@@ -99,8 +108,8 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async remove(id: number) {
-    const user = await this.userRepository.findOne(id);
+  async remove(id: string) {
+    const user = await this.userRepository.findOne({ where: { id: id } });
 
     if (!user) {
       throw new NotFoundException(`User with id ${id} does not exist`);
@@ -109,7 +118,7 @@ export class UsersService {
     return this.userRepository.remove(user);
   }
 
-  async setCurrentRefreshToken(refreshToken: string, userId: number) {
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
     //crypto is a node module, and bcrypt the maximum length of the hash is 60 characters, and token is longer than that, so we need to hash it
     const hash = createHash('sha256').update(refreshToken).digest('hex');
 
@@ -119,7 +128,7 @@ export class UsersService {
     });
   }
 
-  async removeRefreshToken(userId: number) {
+  async removeRefreshToken(userId: string) {
     await this.findById(userId);
 
     return this.userRepository.update(
@@ -130,7 +139,7 @@ export class UsersService {
     );
   }
 
-  async getUserIfRefreshTokenMatches(refreshToken: string, userId: number) {
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
     const user = await this.userRepository.findOne({
       select: ['id', 'refreshToken', 'role'],
       where: { id: userId },
